@@ -5,6 +5,7 @@ import mailIcon from "@/data/free-mail-icon-142-thumb.png";
 import headshot from "@/data/Headshot.jpeg";
 import initials from "@/data/Initials.svg";
 import linkedInIcon from "@/data/LinkedIn-Icon-Black-Logo.wine.svg";
+import menuIcon from "@/data/menu-two-line-solid-rounded-512.webp";
 import githubIcon from "@/data/Octicons-mark-github.svg";
 import { type Project, portfolio } from "@/data/portfolio";
 import voomLogo from "@/data/voom.png";
@@ -57,6 +58,8 @@ type TimelineEntry = {
   description: string;
   highlights: readonly string[];
   technologies?: readonly string[];
+  startYear?: string;
+  endYear?: string;
 };
 
 function Timeline({
@@ -64,7 +67,7 @@ function Timeline({
   variant = "default",
 }: {
   entries: readonly TimelineEntry[];
-  variant?: "default" | "experience";
+  variant?: "default" | "experience" | "education";
 }) {
   const logoFor = (organization: string) => {
     if (organization.startsWith("Amazon")) {
@@ -95,7 +98,6 @@ function Timeline({
             className="timeline-item"
             key={`${entry.organization}-${entry.role}`}
           >
-            <div className="timeline-marker" aria-hidden="true" />
             <div className="entry-topline">
               <div>
                 <p className="entry-period">{entry.period}</p>
@@ -139,13 +141,13 @@ function Timeline({
 
 function ProjectCard({
   project,
-  featured = false,
+  variant,
 }: {
   project: Project;
-  featured?: boolean;
+  variant: "featured" | "standard" | "pickup";
 }) {
   return (
-    <article className={`project-card${featured ? " project-featured" : ""}`}>
+    <article className={`project-card project-${variant}`}>
       <div className="project-number">
         {project.role} · {project.period}
       </div>
@@ -166,7 +168,50 @@ function ProjectCard({
           <ExternalLink key={link.label} {...link} />
         ))}
       </div>
+      <div className="project-tooltip" role="tooltip">
+        <span>Project highlight</span>
+        <p>{project.tooltip}</p>
+      </div>
     </article>
+  );
+}
+
+function EducationTimeline({ entries }: { entries: readonly TimelineEntry[] }) {
+  const chronologicalEntries = [...entries].reverse();
+
+  return (
+    <div className="education-chronology">
+      {chronologicalEntries.map((entry, index) => (
+        <div key={`${entry.organization}-${entry.role}`}>
+          <article className="education-chapter">
+            <div className="education-rail">
+              <span>{entry.startYear}</span>
+              <i />
+              <span>{entry.endYear}</span>
+            </div>
+            <div className="education-card">
+              <p className="entry-period">{entry.period}</p>
+              <h3>{entry.role}</h3>
+              <p className="entry-organization">
+                {entry.organization}
+                {entry.location ? ` · ${entry.location}` : ""}
+              </p>
+              {entry.description && (
+                <p className="entry-description">{entry.description}</p>
+              )}
+              <ul className="highlights">
+                {entry.highlights.map((highlight) => (
+                  <li key={highlight}>{highlight}</li>
+                ))}
+              </ul>
+            </div>
+          </article>
+          {index < chronologicalEntries.length - 1 && (
+            <div className="education-break" aria-hidden="true" />
+          )}
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -207,12 +252,17 @@ function SkillGroups() {
 }
 
 export default function Home() {
-  const featuredProjects = portfolio.projects.filter(
-    (project) => project.featured,
+  const projectByTitle = new Map(
+    portfolio.projects.map((project) => [project.title, project]),
   );
-  const remainingProjects = portfolio.projects.filter(
-    (project) => !project.featured,
-  );
+  const projectLayout = [
+    { title: "2D Game Player & Authoring", variant: "featured" as const },
+    { title: "Cell Society", variant: "standard" as const },
+    { title: "Amora", variant: "standard" as const },
+    { title: "Pickup Comps", variant: "pickup" as const },
+    { title: "Bearish", variant: "standard" as const },
+    { title: "Breakout", variant: "standard" as const },
+  ];
   return (
     <main>
       <header className="site-header">
@@ -229,11 +279,20 @@ export default function Home() {
           <div className="nav-links">
             <a href="#about">About</a>
             <a href="#experience">Experience</a>
+            <a href="#education">Education</a>
             <a href="#projects">Projects</a>
           </div>
-          <a className="nav-contact" href={`mailto:${portfolio.email}`}>
-            Let&apos;s talk <span aria-hidden="true">↗</span>
-          </a>
+          <details className="nav-menu">
+            <summary aria-label="Open menu">
+              <Image alt="" className="nav-menu-icon" src={menuIcon} />
+            </summary>
+            <div className="nav-menu-panel">
+              <a href={`mailto:${portfolio.email}`}>Contact me</a>
+              <a download href="/Dracos_Logan_Resume.pdf">
+                Download résumé
+              </a>
+            </div>
+          </details>
         </nav>
       </header>
       <section className="hero" id="top">
@@ -321,45 +380,37 @@ export default function Home() {
           <Timeline entries={portfolio.experience} variant="experience" />
         </div>
       </section>
-      <section className="section education-section">
+      <section className="section education-section" id="education">
         <p className="section-label">03 / Education</p>
         <div className="section-content">
-          <h2>The foundation.</h2>
-          <Timeline entries={portfolio.education} />
+          <EducationTimeline entries={portfolio.education} />
         </div>
       </section>
       <section className="section projects-section" id="projects">
         <p className="section-label">04 / Selected work</p>
         <div className="section-content">
           <div className="projects-heading">
-            <h2>
-              Things I&apos;ve
-              <br />
-              made.
-            </h2>
-            <p>
-              Each project begins with a question and ends with something
-              useful.
-            </p>
+            <h2>Personal Projects</h2>
           </div>
           <div className="projects-grid">
-            {featuredProjects.map((project) => (
-              <ProjectCard key={project.title} project={project} featured />
-            ))}
-            {remainingProjects.map((project) => (
-              <ProjectCard key={project.title} project={project} />
-            ))}
+            {projectLayout.map(({ title, variant }) => {
+              const project = projectByTitle.get(title);
+
+              return project ? (
+                <ProjectCard
+                  key={project.title}
+                  project={project}
+                  variant={variant}
+                />
+              ) : null;
+            })}
           </div>
         </div>
       </section>
       <footer className="site-footer">
-        <p className="footer-label">Let&apos;s connect</p>
-        <div>
-          <p className="footer-question">Have something in mind?</p>
-          <a className="footer-email" href={`mailto:${portfolio.email}`}>
-            {portfolio.email} <span>↗</span>
-          </a>
-        </div>
+        <p className="footer-question">
+          Reach me using the link in the top right!
+        </p>
         <p className="footer-bottom">
           © {new Date().getFullYear()} {portfolio.name}
         </p>

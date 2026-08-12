@@ -8,6 +8,8 @@ export type Experience = {
   description: string;
   highlights: string[];
   technologies?: string[];
+  startYear?: string;
+  endYear?: string;
 };
 
 export type Project = {
@@ -19,6 +21,7 @@ export type Project = {
   technologies: string[];
   links: Link[];
   featured?: boolean;
+  tooltip: string;
 };
 
 export type SkillGroup = {
@@ -55,20 +58,24 @@ export const portfolio = {
       organization: "Duke University",
       role: "B.S. in Computer Science",
       period: "August 2022 - May 2026",
+      startYear: "2022",
+      endYear: "2026",
       location: "Durham, NC",
-      description:
-        "Relevant Coursework: Structures and Algorithms, Advanced Software Design and Implementation, Practical Financial Markets",
+      description: "Minor in Finance.",
       highlights: [
         "GPA: 3.91",
         "HackDuke Code for Good Hackathon",
         "Tamid Group",
         "Duke Independent Film Festival Editorial",
+        "Relevant Coursework: Structures and Algorithms, Advanced Software Design and Implementation, Practical Financial Markets",
       ],
     },
     {
       organization: "Horace Mann School",
       role: "High School Diploma",
       period: "September 2018 - June 2022",
+      startYear: "2018",
+      endYear: "2022",
       location: "Bronx, NY",
       description: "",
       highlights: [
@@ -99,7 +106,7 @@ export const portfolio = {
         "Step Functions",
         "DynamoDB",
         "SQS",
-        "React"
+        "React",
       ],
     },
     {
@@ -121,7 +128,7 @@ export const portfolio = {
         "ASP.NET",
         "React",
         "CSHTML",
-        "Python"
+        "Python",
       ],
     },
   ] satisfies Experience[],
@@ -129,7 +136,7 @@ export const portfolio = {
     {
       title: "2D Game Player & Authoring",
       role: "Developer",
-      period: "February — May 2025",
+      period: "March — May 2025",
       description:
         "A modular game engine and authoring platform for creating, playing, and sharing 2D levels.",
       highlights: [
@@ -144,8 +151,12 @@ export const portfolio = {
         "Firestore",
         "Jackson",
       ],
-      links: [],
+      links: [
+        { label: "GitHub", href: "https://github.com/dracos-l/oogasalad" },
+      ],
       featured: true,
+      tooltip:
+        "This was an 8 person project! Distributing work and coordinating progress was a challenge, but it was extremely rewarding to see the final product.",
     },
     {
       title: "Cell Society",
@@ -158,7 +169,11 @@ export const portfolio = {
         "Collaborated in a team of three to design, implement, and test modular simulation features using design patterns, reflection, and SOLID principles; delivered 70%+ unit-test coverage.",
       ],
       technologies: ["Java", "JavaFX", "JUnit"],
-      links: [],
+      links: [
+        { label: "GitHub", href: "https://github.com/dracos-l/cellsociety" },
+      ],
+      tooltip:
+        "This was a three person project, and I did a lot of work on the simulation logic. It was a challenge having to continuously rethink the cell simulation design to account for new requirements. Shoutout CS308 and Professor Duvall!",
     },
     {
       title: "Pickup Comps",
@@ -171,7 +186,70 @@ export const portfolio = {
         "Built the frontend with React Router and Sass, plus Pandas data processing to aggregate NBA API data.",
       ],
       technologies: ["React", "JavaScript", "Python", "Pandas", "Sass", "MUI"],
-      links: [],
+      links: [
+        { label: "GitHub", href: "https://github.com/dracos-l/pickupcompsv2" },
+      ],
+      tooltip:
+        "This is my favorite personal project, you really can't find another tool like this online. I'm very proud of it, having developed it with basically no AI use.",
+    },
+    {
+      title: "Bearish",
+      role: "Developer",
+      period: "September 2023",
+      description:
+        "A mobile app built at HackDuke that makes reading business and tech news more engaging.",
+      highlights: [
+        "Built a React Native mobile app in 24 hours with a team of four, integrating OpenAI, NewsAPI, and Extractor API to summarize and surface business/tech news.",
+        "Collaborated across a four-person team under hackathon time constraints to ship a functional cross-platform app from concept to demo.",
+      ],
+      technologies: ["React Native", "JavaScript", "OpenAI API", "NewsAPI"],
+      links: [
+        { label: "GitHub", href: "https://github.com/dracos-l/hackduke23" },
+      ],
+      tooltip:
+        "This was a super fun project! Certainly not the cleanest since it was done in a time crunch, but I had a great time with it.",
+    },
+    {
+      title: "Amora",
+      role: "Co-Developer",
+      period: "October - December 2024",
+      description:
+        "A matchmaking web application that helps users find dinner dates through preference-based matching.",
+      highlights: [
+        "Built a full-stack Flask web app with user authentication, editable profiles, and a preference-based matching and date-proposal system.",
+        "Implemented dynamic features like a 'Surprise Me' matcher, live compliment sending via the Fetch API, and cuisine-based date proposals with table-availability handling.",
+      ],
+      technologies: [
+        "Python",
+        "Flask",
+        "Flask-SQLAlchemy",
+        "MySQL",
+        "Jinja2",
+        "Bootstrap",
+        "JavaScript",
+      ],
+      links: [
+        { label: "GitHub", href: "https://github.com/dracos-l/DatingApp" },
+      ],
+      tooltip:
+        "This was a part of a class I took in my study abroad in Madrid. It was my first time using many of these technologies, and it was fun doing a project in a different way than I had before.",
+    },
+    {
+      title: "Breakout",
+      role: "Sole Developer",
+      period: "January 2025",
+      description:
+        "A JavaFX implementation of the classic Breakout arcade game with multiple levels and power-ups.",
+      highlights: [
+        "Built a multi-level Breakout game in Java and JavaFX, including paddle/ball physics, brick collision, scorekeeping, and a lives system.",
+        "Designed a randomized power-up system (paddle resizing, ball speed, etc.) spawning from bricks, plus cheat-key level navigation and restart functionality.",
+      ],
+      technologies: ["Java", "JavaFX"],
+      links: [
+        { label: "GitHub", href: "https://github.com/dracos-l/breakout" },
+      ],
+      tooltip:
+        "This is my only solo project (outside internships). It was very cool to play around with the collision and physics at such a low level.",
     },
   ] satisfies Project[],
   skillGroups: [
