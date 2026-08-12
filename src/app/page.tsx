@@ -177,7 +177,7 @@ function ProjectCard({
 }
 
 function EducationTimeline({ entries }: { entries: readonly TimelineEntry[] }) {
-  const chronologicalEntries = [...entries].reverse();
+  const chronologicalEntries = entries;
 
   return (
     <div className="education-chronology">
@@ -185,9 +185,9 @@ function EducationTimeline({ entries }: { entries: readonly TimelineEntry[] }) {
         <div key={`${entry.organization}-${entry.role}`}>
           <article className="education-chapter">
             <div className="education-rail">
-              <span>{entry.startYear}</span>
-              <i />
               <span>{entry.endYear}</span>
+              <i />
+              <span>{entry.startYear}</span>              
             </div>
             <div className="education-card">
               <p className="entry-period">{entry.period}</p>

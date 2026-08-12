@@ -81,6 +81,7 @@ export const portfolio = {
       highlights: [
         "Editor-in-Chief of current events magazine",
         "Captain of Soccer, Track, and Baseball teams",
+        "Awarded Outstanding Athlete & Sportsman Award",
       ],
     },
   ] satisfies Experience[],
