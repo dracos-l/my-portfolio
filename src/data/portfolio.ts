@@ -32,6 +32,13 @@ export type SkillGroup = {
   }[];
 };
 
+export type QuizQuestion = {
+  question: string;
+  options: readonly string[];
+  answer: number;
+  explanation: string;
+};
+
 /**
  * Your portfolio's single source of truth. Replace the placeholders below with
  * your details. Adding array objects automatically adds content to the page.
@@ -53,6 +60,55 @@ export const portfolio = {
     { label: "LinkedIn", href: "https://www.linkedin.com/in/logandracos/" },
     { label: "GitHub", href: "https://github.com/dracos-l" },
   ] satisfies Link[],
+  quizQuestions: [
+    {
+      question: "What did I say I'm going to miss most about North Carolina?",
+      options: ["The sunsets", "Cookout", "The nice weather", "Waffle House"],
+      answer: 2,
+      explanation:
+        "I will miss miss all of these deeply. But the weather was the best",
+    },
+    {
+      question:
+        "Who was the professor for CS308, my most impactful software design class?",
+      options: [
+        "Professor Fain",
+        "Professor Duvall",
+        "Professor O'Hanlon",
+        "Professor Caccavale",
+      ],
+      answer: 1,
+      explanation:
+        "All of these Duke professors were incredible. And I TA'd for Professor Duvall senior year!",
+    },
+    {
+      question: "Which sport is one of my outside-of-work interests?",
+      options: [
+        "Whitewater canoeing",
+        "Rock climbing",
+        "Surfing",
+        "Ice hockey",
+      ],
+      answer: 0,
+      explanation:
+        "Whitewater canoeing is one of my favorite ways to get outside.",
+    },
+    {
+      question:
+        "Which language was used for the 2D Game Player & Authoring project?",
+      options: ["Go", "Rust", "Swift", "Java"],
+      answer: 3,
+      explanation:
+        "The game engine and authoring platform was built with Java and JavaFX. It was a great way to get low-level and understand what goes into such game development",
+    },
+    {
+      question: "Where did I build Amora, my dating app project?",
+      options: ["Arlington", "North Carolina", "Madrid", "New York"],
+      answer: 2,
+      explanation:
+        "I did this project while studying abroad in Madrid! I liked the project a lot and loved Madrid.",
+    },
+  ] satisfies readonly QuizQuestion[],
   education: [
     {
       organization: "Duke University",
@@ -68,6 +124,7 @@ export const portfolio = {
         "Tamid Group",
         "Duke Independent Film Festival Editorial",
         "Relevant Coursework: Structures and Algorithms, Advanced Software Design and Implementation, Practical Financial Markets",
+        "Undergraduate Teaching Assistant for CS 308: Advanced Software Design and Implementation",
       ],
     },
     {
@@ -81,7 +138,7 @@ export const portfolio = {
       highlights: [
         "Editor-in-Chief of current events magazine",
         "Captain of Soccer, Track, and Baseball teams",
-        "Awarded Outstanding Athlete & Sportsman Award",
+        "Awarded MVP/Sportsmanship award",
       ],
     },
   ] satisfies Experience[],

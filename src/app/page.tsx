@@ -187,7 +187,7 @@ function EducationTimeline({ entries }: { entries: readonly TimelineEntry[] }) {
             <div className="education-rail">
               <span>{entry.endYear}</span>
               <i />
-              <span>{entry.startYear}</span>              
+              <span>{entry.startYear}</span>
             </div>
             <div className="education-card">
               <p className="entry-period">{entry.period}</p>
@@ -288,6 +288,7 @@ export default function Home() {
             </summary>
             <div className="nav-menu-panel">
               <a href={`mailto:${portfolio.email}`}>Contact me</a>
+              <a href="/quiz">Take the quiz</a>
               <a download href="/Dracos_Logan_Resume.pdf">
                 Download résumé
               </a>
