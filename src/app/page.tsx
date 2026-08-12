@@ -1,10 +1,13 @@
 import Image from "next/image";
+import amazonLogo from "@/data/Amazon_logo.svg.png";
+import canoeingPicture from "@/data/canoeing_picture.jpg";
 import mailIcon from "@/data/free-mail-icon-142-thumb.png";
 import headshot from "@/data/Headshot.jpeg";
 import initials from "@/data/Initials.svg";
 import linkedInIcon from "@/data/LinkedIn-Icon-Black-Logo.wine.svg";
 import githubIcon from "@/data/Octicons-mark-github.svg";
 import { type Project, portfolio } from "@/data/portfolio";
+import voomLogo from "@/data/voom.png";
 
 function ExternalLink({ href, label }: { href: string; label: string }) {
   return (
@@ -17,7 +20,7 @@ function ExternalLink({ href, label }: { href: string; label: string }) {
 function SocialLinks({
   variant = "default",
 }: {
-  variant?: "default" | "footer" | "hero";
+  variant?: "default" | "hero";
 }) {
   return (
     <div className={`social-links social-links-${variant}`}>
@@ -56,36 +59,80 @@ type TimelineEntry = {
   technologies?: readonly string[];
 };
 
-function Timeline({ entries }: { entries: readonly TimelineEntry[] }) {
+function Timeline({
+  entries,
+  variant = "default",
+}: {
+  entries: readonly TimelineEntry[];
+  variant?: "default" | "experience";
+}) {
+  const logoFor = (organization: string) => {
+    if (organization.startsWith("Amazon")) {
+      return {
+        image: amazonLogo,
+        label: "Amazon",
+        href: "https://www.amazon.com",
+      };
+    }
+    if (organization.startsWith("VOOM")) {
+      return {
+        image: voomLogo,
+        label: "VOOM Insurance",
+        href: "https://www.voominsurance.com",
+      };
+    }
+    return undefined;
+  };
+
   return (
-    <div className="timeline">
-      {entries.map((entry) => (
-        <article
-          className="timeline-item"
-          key={`${entry.organization}-${entry.role}`}
-        >
-          <div className="timeline-marker" aria-hidden="true" />
-          <p className="entry-period">{entry.period}</p>
-          <h3>{entry.role}</h3>
-          <p className="entry-organization">
-            {entry.organization}
-            {entry.location ? ` · ${entry.location}` : ""}
-          </p>
-          <p className="entry-description">{entry.description}</p>
-          <ul className="highlights">
-            {entry.highlights.map((highlight) => (
-              <li key={highlight}>{highlight}</li>
-            ))}
-          </ul>
-          {entry.technologies && (
-            <div className="tags">
-              {entry.technologies.map((technology) => (
-                <span key={technology}>{technology}</span>
-              ))}
+    <div className={`timeline timeline-${variant}`}>
+      {entries.map((entry) => {
+        const logo =
+          variant === "experience" ? logoFor(entry.organization) : undefined;
+
+        return (
+          <article
+            className="timeline-item"
+            key={`${entry.organization}-${entry.role}`}
+          >
+            <div className="timeline-marker" aria-hidden="true" />
+            <div className="entry-topline">
+              <div>
+                <p className="entry-period">{entry.period}</p>
+                <h3>{entry.role}</h3>
+                <p className="entry-organization">
+                  {entry.organization}
+                  {entry.location ? ` · ${entry.location}` : ""}
+                </p>
+              </div>
+              {logo && (
+                <a
+                  aria-label={`Visit ${logo.label}`}
+                  className="entry-logo"
+                  href={logo.href}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <Image alt={`${logo.label} logo`} src={logo.image} />
+                </a>
+              )}
             </div>
-          )}
-        </article>
-      ))}
+            <p className="entry-description">{entry.description}</p>
+            <ul className="highlights">
+              {entry.highlights.map((highlight) => (
+                <li key={highlight}>{highlight}</li>
+              ))}
+            </ul>
+            {entry.technologies && (
+              <div className="tags">
+                {entry.technologies.map((technology) => (
+                  <span key={technology}>{technology}</span>
+                ))}
+              </div>
+            )}
+          </article>
+        );
+      })}
     </div>
   );
 }
@@ -120,6 +167,42 @@ function ProjectCard({
         ))}
       </div>
     </article>
+  );
+}
+
+function SkillLevel({ level }: { level: number }) {
+  const bubbles = ["one", "two", "three", "four", "five"];
+
+  return (
+    <div
+      aria-label={`${level} out of 5 comfort level`}
+      className="skill-level"
+      role="img"
+    >
+      {bubbles.map((bubble, index) => (
+        <span className={index < level ? "is-filled" : ""} key={bubble} />
+      ))}
+    </div>
+  );
+}
+
+function SkillGroups() {
+  return (
+    <div className="skill-groups">
+      {portfolio.skillGroups.map((group) => (
+        <div className="skill-group" key={group.category}>
+          <h3>{group.category}</h3>
+          <div className="skill-list">
+            {group.items.map((skill) => (
+              <div className="skill-item" key={skill.name}>
+                <span>{skill.name}</span>
+                <SkillLevel level={skill.level} />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -166,18 +249,12 @@ export default function Home() {
         <div className="eyebrow">
           <span /> {portfolio.availability}
         </div>
-        <p className="hero-kicker">Hello, I&apos;m</p>
-        <h1>{portfolio.name}.</h1>
+        <h1>{portfolio.name}</h1>
         <div className="hero-role-line">
           <p className="hero-role">{portfolio.role}</p>
           <span className="hero-location">{portfolio.location}</span>
         </div>
         <p className="hero-intro">{portfolio.intro}</p>
-        <div className="hero-actions">
-          <a className="button button-primary" href="#projects">
-            Explore my work <span>↓</span>
-          </a>
-        </div>
         <div className="hero-footer">
           <a
             aria-label={`Email ${portfolio.name}`}
@@ -196,11 +273,21 @@ export default function Home() {
       <section className="section about-section" id="about">
         <p className="section-label">01 / About me</p>
         <div className="section-content about-content">
-          <h2>
-            A little more
-            <br />
-            about me.
-          </h2>
+          <div className="about-visual">
+            <h2>
+              A little more
+              <br />
+              about me.
+            </h2>
+            <figure className="canoeing-photo">
+              <Image
+                alt="Logan canoeing on a lake"
+                className="canoeing-image"
+                sizes="(max-width: 900px) 100vw, 50vw"
+                src={canoeingPicture}
+              />
+            </figure>
+          </div>
           <div className="prose">
             {portfolio.about.map((paragraph) => (
               <p key={paragraph} className="mb-4">
@@ -212,17 +299,26 @@ export default function Home() {
               <p>{portfolio.interests.join(" · ")}</p>
             </div>
           </div>
+          <div className="about-skills">
+            <div className="about-skills-heading">
+              <h3>Skills &amp; tools.</h3>
+              <p>
+                Five bubbles represent my comfort level with each technology.
+              </p>
+            </div>
+            <SkillGroups />
+          </div>
         </div>
       </section>
-      <section className="section" id="experience">
+      <section className="section experience-section" id="experience">
         <p className="section-label">02 / Experience</p>
         <div className="section-content">
           <h2>
-            Where I&apos;ve
+            My relevant
             <br />
-            learned &amp; built.
+            work experience.
           </h2>
-          <Timeline entries={portfolio.experience} />
+          <Timeline entries={portfolio.experience} variant="experience" />
         </div>
       </section>
       <section className="section education-section">
@@ -256,22 +352,13 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="skills-strip" aria-label="Skills">
-        <p>Tools I work with</p>
-        <div>
-          {portfolio.skills.map((skill) => (
-            <span key={skill}>{skill}</span>
-          ))}
-        </div>
-      </section>
       <footer className="site-footer">
-        <p className="section-label">05 / Contact</p>
+        <p className="footer-label">Let&apos;s connect</p>
         <div>
           <p className="footer-question">Have something in mind?</p>
           <a className="footer-email" href={`mailto:${portfolio.email}`}>
             {portfolio.email} <span>↗</span>
           </a>
-          <SocialLinks variant="footer" />
         </div>
         <p className="footer-bottom">
           © {new Date().getFullYear()} {portfolio.name}

@@ -21,6 +21,14 @@ export type Project = {
   featured?: boolean;
 };
 
+export type SkillGroup = {
+  category: string;
+  items: {
+    name: string;
+    level: 1 | 2 | 3 | 4 | 5;
+  }[];
+};
+
 /**
  * Your portfolio's single source of truth. Replace the placeholders below with
  * your details. Adding array objects automatically adds content to the page.
@@ -35,8 +43,8 @@ export const portfolio = {
   intro:
     "Hello! I'm Logan, and I like to create full-stack projects with AWS services, React, and Java. I specialize in building data-driven tools for financial systems, although I like to play around with all aspects of development. I'm excited to start in Amazon's FinTech Organization this September.",
   about: [
-    "I'm originally from New York, and have been enjoying building things since high school. Starting off with basic HTML and CSS projects, I am now proficient in technologies across the tech stack. My specialty lies in cloud infrastructure (AWS), database design, and React frontend development. I enjoy working closely with customers to ensure I create impactful, easy-to-use technologies.",
-    "I recently graduated in Spring 2026 from Duke with a major in Computer Science and a minor in finance. While I'll miss the North Carolina weather, I'm excited to explore a new city and new lifestyle working full time at Amazon's Arlington office.",
+    "I'm originally from New York and have been building things since high school, starting off with basic HTML and CSS projects and growing from there into a full stack of technologies. These days, I focus on cloud infrastructure and data-driven apps, designing scalable systems on AWS and building the databases and React frontends that bring them to life. I especailly enjoy projects that combine tech and finance that real people can use.",
+    "I recently graduated in Spring 2026 from Duke with a major in Computer Science and a minor in finance. I'll be moving to D.C. in early September. While I'll miss the North Carolina weather, I'm excited to explore a new city and new lifestyle working full time at Amazon's Arlington office.",
   ],
   socialLinks: [
     { label: "LinkedIn", href: "https://www.linkedin.com/in/logandracos/" },
@@ -76,11 +84,11 @@ export const portfolio = {
       period: "May — August 2025",
       location: "Arlington, VA",
       description:
-        "Built secure, scalable tools that streamlined case-processing workflows for Amazon investigators.",
+        "Built secure, scalable case-processing tools for Amazon FinTech investigators.",
       highlights: [
-        "Designed and implemented a bulk case-upload system supporting 10,000 cases per batch with AWS CDK and Amazon Q AI assistance; integrated API Gateway, Lambda, S3, and Glue to streamline case creation for 30+ investigators.",
-        "Developed an automated CSV validation pipeline with AWS Glue, Step Functions, Spark data-quality checks, DynamoDB error reporting, and encrypted cross-account permissions, enabling secure, zero-error multi-case processing.",
-        "Engineered an Amazon Connect queue-management system using SQS and Lambda for case backfill operations while maintaining 80%+ unit-test coverage and documentation standards.",
+        "Built an AWS CDK bulk-upload workflow for up to 10,000 cases, connecting API Gateway, Lambda, S3, and Glue for 30+ investigators.",
+        "Automated CSV validation with Glue, Step Functions, Spark, DynamoDB, and encrypted cross-account access for secure, zero-error multi-case processing.",
+        "Created Amazon Connect backfill tooling with SQS and Lambda, maintaining 80%+ unit-test coverage.",
       ],
       technologies: [
         "AWS CDK",
@@ -91,6 +99,7 @@ export const portfolio = {
         "Step Functions",
         "DynamoDB",
         "SQS",
+        "React"
       ],
     },
     {
@@ -99,11 +108,11 @@ export const portfolio = {
       period: "June — August 2024",
       location: "Tel Aviv, Israel",
       description:
-        "Improved the financial and legal workflows behind a digital-insurance platform.",
+        "Improved financial reporting and legal-document workflows for a digital-insurance platform.",
       highlights: [
-        "Optimized financial reporting and database performance by enhancing PostgreSQL functions, modifying AWS Lambda integrations, and collaborating with product teams—improving accuracy by 50% and performance by 20%.",
-        "Developed automated legal-document processing that saved the legal team 2+ hours per week, including auto-filling PDF functionality with CSHTML.",
-        "Built C#/ASP.NET APIs and improved React dashboard navigation to make the product easier to use.",
+        "Improved PostgreSQL functions and AWS Lambda integrations, raising reporting accuracy by 50% and performance by 20%.",
+        "Automated legal-document PDFs, saving the legal team 2+ hours each week.",
+        "Built C#/ASP.NET APIs and clearer React dashboard navigation.",
       ],
       technologies: [
         "PostgreSQL",
@@ -112,6 +121,7 @@ export const portfolio = {
         "ASP.NET",
         "React",
         "CSHTML",
+        "Python"
       ],
     },
   ] satisfies Experience[],
@@ -164,7 +174,36 @@ export const portfolio = {
       links: [],
     },
   ] satisfies Project[],
-  skills: ["JavaScript", "TypeScript", "React", "Next.js", "Python", "Git"],
+  skillGroups: [
+    {
+      category: "Languages",
+      items: [
+        { name: "Java", level: 5 },
+        { name: "JavaScript/Typescript", level: 4 },
+        { name: "SQL", level: 4 },
+        { name: "Python", level: 4 },
+        { name: "C#", level: 3 },
+      ],
+    },
+    {
+      category: "Frameworks",
+      items: [
+        { name: "React", level: 5 },
+        { name: "AWS CDK", level: 4 },
+        { name: "Next.js", level: 4 },
+        { name: "ASP.NET", level: 3 },
+      ],
+    },
+    {
+      category: "Tools & platforms",
+      items: [
+        { name: "AWS", level: 5 },
+        { name: "Git", level: 5 },
+        { name: "PostgreSQL", level: 4 },
+        { name: "Firebase", level: 3 },
+      ],
+    },
+  ] satisfies SkillGroup[],
   interests: [
     "Whitewater Canoeing",
     "NBA (Boston Celtics)",
