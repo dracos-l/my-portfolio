@@ -1,103 +1,213 @@
-import Image from "next/image";
+import { portfolio } from "@/data/portfolio";
+
+function ExternalLink({ href, label }: { href: string; label: string }) {
+  return (
+    <a className="text-link" href={href} rel="noreferrer" target="_blank">
+      {label} <span aria-hidden="true">↗</span>
+    </a>
+  );
+}
+
+type TimelineEntry = {
+  organization: string;
+  role: string;
+  period: string;
+  location?: string;
+  description: string;
+  highlights: readonly string[];
+  technologies?: readonly string[];
+};
+
+function Timeline({ entries }: { entries: readonly TimelineEntry[] }) {
+  return (
+    <div className="timeline">
+      {entries.map((entry) => (
+        <article
+          className="timeline-item"
+          key={`${entry.organization}-${entry.role}`}
+        >
+          <div className="timeline-marker" aria-hidden="true" />
+          <p className="entry-period">{entry.period}</p>
+          <h3>{entry.role}</h3>
+          <p className="entry-organization">
+            {entry.organization}
+            {entry.location ? ` · ${entry.location}` : ""}
+          </p>
+          <p className="entry-description">{entry.description}</p>
+          <ul className="highlights">
+            {entry.highlights.map((highlight) => (
+              <li key={highlight}>{highlight}</li>
+            ))}
+          </ul>
+          {entry.technologies && (
+            <div className="tags">
+              {entry.technologies.map((technology) => (
+                <span key={technology}>{technology}</span>
+              ))}
+            </div>
+          )}
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function ProjectCard({
+  project,
+  featured = false,
+}: {
+  project: (typeof portfolio.projects)[number];
+  featured?: boolean;
+}) {
+  return (
+    <article className={`project-card${featured ? " project-featured" : ""}`}>
+      <div className="project-number">
+        {featured ? "Featured project" : "Personal project"}
+      </div>
+      <h3>{project.title}</h3>
+      <p>{project.description}</p>
+      <div className="tags">
+        {project.technologies.map((technology) => (
+          <span key={technology}>{technology}</span>
+        ))}
+      </div>
+      <div className="project-links">
+        {project.links.map((link) => (
+          <ExternalLink key={link.label} {...link} />
+        ))}
+      </div>
+    </article>
+  );
+}
 
 export default function Home() {
+  const featuredProjects = portfolio.projects.filter(
+    (project) => project.featured,
+  );
+  const remainingProjects = portfolio.projects.filter(
+    (project) => !project.featured,
+  );
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
+    <main>
+      <nav className="site-nav" aria-label="Primary navigation">
+        <a className="monogram" href="#top" aria-label="Back to top">
+          {portfolio.initials}
+        </a>
+        <div className="nav-links">
+          <a href="#about">About</a>
+          <a href="#experience">Experience</a>
+          <a href="#projects">Projects</a>
+        </div>
+        <a className="nav-contact" href={`mailto:${portfolio.email}`}>
+          Let&apos;s talk <span aria-hidden="true">↗</span>
+        </a>
+      </nav>
+      <section className="hero" id="top">
+        <div className="eyebrow">
+          <span /> {portfolio.availability}
+        </div>
+        <p className="hero-kicker">Hello, I&apos;m</p>
+        <h1>{portfolio.name}.</h1>
+        <p className="hero-role">{portfolio.role}</p>
+        <p className="hero-intro">{portfolio.intro}</p>
+        <div className="hero-actions">
+          <a className="button button-primary" href="#projects">
+            Explore my work <span>↓</span>
           </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
+          <a className="button button-quiet" href={`mailto:${portfolio.email}`}>
+            Get in touch
           </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        <div className="hero-footer">
+          <p>{portfolio.location}</p>
+          <div className="social-links">
+            {portfolio.socialLinks.map((link) => (
+              <ExternalLink key={link.label} {...link} />
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="section about-section" id="about">
+        <p className="section-label">01 / About me</p>
+        <div className="section-content about-content">
+          <h2>
+            A little more
+            <br />
+            about me.
+          </h2>
+          <div className="prose">
+            {portfolio.about.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+            <div className="mini-list">
+              <p className="mini-label">Outside of work</p>
+              <p>{portfolio.interests.join(" · ")}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="section" id="experience">
+        <p className="section-label">02 / Experience</p>
+        <div className="section-content">
+          <h2>
+            Where I&apos;ve
+            <br />
+            learned &amp; built.
+          </h2>
+          <Timeline entries={portfolio.experience} />
+        </div>
+      </section>
+      <section className="section education-section">
+        <p className="section-label">03 / Education</p>
+        <div className="section-content">
+          <h2>The foundation.</h2>
+          <Timeline entries={portfolio.education} />
+        </div>
+      </section>
+      <section className="section projects-section" id="projects">
+        <p className="section-label">04 / Selected work</p>
+        <div className="section-content">
+          <div className="projects-heading">
+            <h2>
+              Things I&apos;ve
+              <br />
+              made.
+            </h2>
+            <p>
+              Each project begins with a question and ends with something
+              useful.
+            </p>
+          </div>
+          <div className="projects-grid">
+            {featuredProjects.map((project) => (
+              <ProjectCard key={project.title} project={project} featured />
+            ))}
+            {remainingProjects.map((project) => (
+              <ProjectCard key={project.title} project={project} />
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="skills-strip" aria-label="Skills">
+        <p>Tools I work with</p>
+        <div>
+          {portfolio.skills.map((skill) => (
+            <span key={skill}>{skill}</span>
+          ))}
+        </div>
+      </section>
+      <footer className="site-footer">
+        <p className="section-label">05 / Contact</p>
+        <div>
+          <p className="footer-question">Have something in mind?</p>
+          <a className="footer-email" href={`mailto:${portfolio.email}`}>
+            {portfolio.email} <span>↗</span>
+          </a>
+        </div>
+        <p className="footer-bottom">
+          © {new Date().getFullYear()} {portfolio.name}
+        </p>
       </footer>
-    </div>
+    </main>
   );
 }
