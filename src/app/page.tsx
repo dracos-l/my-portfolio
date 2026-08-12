@@ -277,10 +277,10 @@ export default function Home() {
             </span>
           </a>
           <div className="nav-links">
-            <a href="#about">About</a>
             <a href="#experience">Experience</a>
             <a href="#education">Education</a>
             <a href="#projects">Projects</a>
+            <a href="#about">About</a>
           </div>
           <details className="nav-menu">
             <summary aria-label="Open menu">
@@ -329,8 +329,46 @@ export default function Home() {
           <SocialLinks variant="hero" />
         </div>
       </section>
+      <section className="section experience-section" id="experience">
+        <p className="section-label">01 / Experience</p>
+        <div className="section-content">
+          <h2>
+            My relevant
+            <br />
+            work experience.
+          </h2>
+          <Timeline entries={portfolio.experience} variant="experience" />
+        </div>
+      </section>
+      <section className="section education-section" id="education">
+        <p className="section-label">02 / Education</p>
+        <div className="section-content">
+          <EducationTimeline entries={portfolio.education} />
+        </div>
+      </section>
+      <section className="section projects-section" id="projects">
+        <p className="section-label">03 / Selected work</p>
+        <div className="section-content">
+          <div className="projects-heading">
+            <h2>Personal Projects</h2>
+          </div>
+          <div className="projects-grid">
+            {projectLayout.map(({ title, variant }) => {
+              const project = projectByTitle.get(title);
+
+              return project ? (
+                <ProjectCard
+                  key={project.title}
+                  project={project}
+                  variant={variant}
+                />
+              ) : null;
+            })}
+          </div>
+        </div>
+      </section>
       <section className="section about-section" id="about">
-        <p className="section-label">01 / About me</p>
+        <p className="section-label">04 / About me</p>
         <div className="section-content about-content">
           <div className="about-visual">
             <h2>
@@ -366,44 +404,6 @@ export default function Home() {
               </p>
             </div>
             <SkillGroups />
-          </div>
-        </div>
-      </section>
-      <section className="section experience-section" id="experience">
-        <p className="section-label">02 / Experience</p>
-        <div className="section-content">
-          <h2>
-            My relevant
-            <br />
-            work experience.
-          </h2>
-          <Timeline entries={portfolio.experience} variant="experience" />
-        </div>
-      </section>
-      <section className="section education-section" id="education">
-        <p className="section-label">03 / Education</p>
-        <div className="section-content">
-          <EducationTimeline entries={portfolio.education} />
-        </div>
-      </section>
-      <section className="section projects-section" id="projects">
-        <p className="section-label">04 / Selected work</p>
-        <div className="section-content">
-          <div className="projects-heading">
-            <h2>Personal Projects</h2>
-          </div>
-          <div className="projects-grid">
-            {projectLayout.map(({ title, variant }) => {
-              const project = projectByTitle.get(title);
-
-              return project ? (
-                <ProjectCard
-                  key={project.title}
-                  project={project}
-                  variant={variant}
-                />
-              ) : null;
-            })}
           </div>
         </div>
       </section>
