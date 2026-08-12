@@ -1,10 +1,48 @@
-import { portfolio } from "@/data/portfolio";
+import Image from "next/image";
+import mailIcon from "@/data/free-mail-icon-142-thumb.png";
+import headshot from "@/data/Headshot.jpeg";
+import initials from "@/data/Initials.svg";
+import linkedInIcon from "@/data/LinkedIn-Icon-Black-Logo.wine.svg";
+import githubIcon from "@/data/Octicons-mark-github.svg";
+import { type Project, portfolio } from "@/data/portfolio";
 
 function ExternalLink({ href, label }: { href: string; label: string }) {
   return (
     <a className="text-link" href={href} rel="noreferrer" target="_blank">
       {label} <span aria-hidden="true">↗</span>
     </a>
+  );
+}
+
+function SocialLinks({
+  variant = "default",
+}: {
+  variant?: "default" | "footer" | "hero";
+}) {
+  return (
+    <div className={`social-links social-links-${variant}`}>
+      {portfolio.socialLinks.map((link) => {
+        const icon = link.label === "GitHub" ? githubIcon : linkedInIcon;
+
+        return (
+          <a
+            aria-label={link.label}
+            className={`social-icon-link social-icon-link-${link.label.toLowerCase()}`}
+            href={link.href}
+            key={link.label}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <Image
+              alt=""
+              className={`social-icon social-icon-${link.label.toLowerCase()}`}
+              src={icon}
+            />
+            {variant !== "hero" && <span>{link.label}</span>}
+          </a>
+        );
+      })}
+    </div>
   );
 }
 
@@ -56,16 +94,21 @@ function ProjectCard({
   project,
   featured = false,
 }: {
-  project: (typeof portfolio.projects)[number];
+  project: Project;
   featured?: boolean;
 }) {
   return (
     <article className={`project-card${featured ? " project-featured" : ""}`}>
       <div className="project-number">
-        {featured ? "Featured project" : "Personal project"}
+        {project.role} · {project.period}
       </div>
       <h3>{project.title}</h3>
       <p>{project.description}</p>
+      <ul className="project-highlights">
+        {project.highlights.map((highlight) => (
+          <li key={highlight}>{highlight}</li>
+        ))}
+      </ul>
       <div className="tags">
         {project.technologies.map((technology) => (
           <span key={technology}>{technology}</span>
@@ -89,42 +132,65 @@ export default function Home() {
   );
   return (
     <main>
-      <nav className="site-nav" aria-label="Primary navigation">
-        <a className="monogram" href="#top" aria-label="Back to top">
-          {portfolio.initials}
-        </a>
-        <div className="nav-links">
-          <a href="#about">About</a>
-          <a href="#experience">Experience</a>
-          <a href="#projects">Projects</a>
-        </div>
-        <a className="nav-contact" href={`mailto:${portfolio.email}`}>
-          Let&apos;s talk <span aria-hidden="true">↗</span>
-        </a>
-      </nav>
+      <header className="site-header">
+        <nav className="site-nav" aria-label="Primary navigation">
+          <a className="monogram" href="#top" aria-label="Back to top">
+            <span className="initials-crop">
+              <Image
+                alt={`${portfolio.name} initials`}
+                className="initials-logo"
+                src={initials}
+              />
+            </span>
+          </a>
+          <div className="nav-links">
+            <a href="#about">About</a>
+            <a href="#experience">Experience</a>
+            <a href="#projects">Projects</a>
+          </div>
+          <a className="nav-contact" href={`mailto:${portfolio.email}`}>
+            Let&apos;s talk <span aria-hidden="true">↗</span>
+          </a>
+        </nav>
+      </header>
       <section className="hero" id="top">
+        <div className="headshot-frame">
+          <Image
+            alt="Portrait of Logan Dracos"
+            className="headshot"
+            placeholder="blur"
+            priority
+            src={headshot}
+          />
+        </div>
         <div className="eyebrow">
           <span /> {portfolio.availability}
         </div>
         <p className="hero-kicker">Hello, I&apos;m</p>
         <h1>{portfolio.name}.</h1>
-        <p className="hero-role">{portfolio.role}</p>
+        <div className="hero-role-line">
+          <p className="hero-role">{portfolio.role}</p>
+          <span className="hero-location">{portfolio.location}</span>
+        </div>
         <p className="hero-intro">{portfolio.intro}</p>
         <div className="hero-actions">
           <a className="button button-primary" href="#projects">
             Explore my work <span>↓</span>
           </a>
-          <a className="button button-quiet" href={`mailto:${portfolio.email}`}>
-            Get in touch
-          </a>
         </div>
         <div className="hero-footer">
-          <p>{portfolio.location}</p>
-          <div className="social-links">
-            {portfolio.socialLinks.map((link) => (
-              <ExternalLink key={link.label} {...link} />
-            ))}
-          </div>
+          <a
+            aria-label={`Email ${portfolio.name}`}
+            className="hero-icon-link hero-icon-link-email"
+            href={`mailto:${portfolio.email}`}
+          >
+            <Image
+              alt=""
+              className="hero-icon hero-icon-email"
+              src={mailIcon}
+            />
+          </a>
+          <SocialLinks variant="hero" />
         </div>
       </section>
       <section className="section about-section" id="about">
@@ -137,7 +203,9 @@ export default function Home() {
           </h2>
           <div className="prose">
             {portfolio.about.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
+              <p key={paragraph} className="mb-4">
+                {paragraph}
+              </p>
             ))}
             <div className="mini-list">
               <p className="mini-label">Outside of work</p>
@@ -203,6 +271,7 @@ export default function Home() {
           <a className="footer-email" href={`mailto:${portfolio.email}`}>
             {portfolio.email} <span>↗</span>
           </a>
+          <SocialLinks variant="footer" />
         </div>
         <p className="footer-bottom">
           © {new Date().getFullYear()} {portfolio.name}
