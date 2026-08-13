@@ -24,4 +24,5 @@ npm run start
 <ul>
     <li> Next.js with Typescript </li>
     <li> Tailwind.css for styling </li>
+    <li> Vercel for deployment </li>
 </ul>
