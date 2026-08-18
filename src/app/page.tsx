@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { type DragEvent, type KeyboardEvent, useEffect, useState } from "react";
 import amazonLogo from "@/data/Amazon_logo.svg.png";
 import canoeingPicture from "@/data/canoeing_picture.jpg";
 import mailIcon from "@/data/free-mail-icon-142-thumb.png";
@@ -9,6 +12,16 @@ import menuIcon from "@/data/menu-two-line-solid-rounded-512.webp";
 import githubIcon from "@/data/Octicons-mark-github.svg";
 import { type Project, portfolio } from "@/data/portfolio";
 import voomLogo from "@/data/voom.png";
+
+const PROJECT_LAYOUT = [
+  { title: "2D Game Player & Authoring", variant: "featured" as const },
+  { title: "Cell Society", variant: "standard" as const },
+  { title: "Amora", variant: "standard" as const },
+  { title: "Pickup Comps", variant: "pickup" as const },
+  { title: "Bearish", variant: "standard" as const },
+  { title: "Breakout", variant: "standard" as const },
+];
+const PROJECT_ORDER_STORAGE_KEY = "logan-dracos-project-order";
 
 function ExternalLink({ href, label }: { href: string; label: string }) {
   return (
@@ -139,15 +152,9 @@ function Timeline({
   );
 }
 
-function ProjectCard({
-  project,
-  variant,
-}: {
-  project: Project;
-  variant: "featured" | "standard" | "pickup";
-}) {
+function ProjectCard({ project }: { project: Project }) {
   return (
-    <article className={`project-card project-${variant}`}>
+    <div className="project-card">
       <div className="project-number">
         {project.role} · {project.period}
       </div>
@@ -172,7 +179,7 @@ function ProjectCard({
         <span>Project highlight</span>
         <p>{project.tooltip}</p>
       </div>
-    </article>
+    </div>
   );
 }
 
@@ -252,17 +259,177 @@ function SkillGroups() {
 }
 
 export default function Home() {
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [projectOrder, setProjectOrder] = useState<string[]>([]);
+  const [draggedProject, setDraggedProject] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
   const projectByTitle = new Map(
     portfolio.projects.map((project) => [project.title, project]),
   );
-  const projectLayout = [
-    { title: "2D Game Player & Authoring", variant: "featured" as const },
-    { title: "Cell Society", variant: "standard" as const },
-    { title: "Amora", variant: "standard" as const },
-    { title: "Pickup Comps", variant: "pickup" as const },
-    { title: "Bearish", variant: "standard" as const },
-    { title: "Breakout", variant: "standard" as const },
-  ];
+  const projectSlots: Array<
+    { kind: "project"; title: string } | { kind: "empty"; key: string }
+  > = [];
+  let hasUnpairedHalfWidthProject = false;
+
+  for (const title of projectOrder) {
+    const layout = PROJECT_LAYOUT.find((item) => item.title === title);
+
+    if (!layout) continue;
+
+    if (layout.variant !== "standard" && hasUnpairedHalfWidthProject) {
+      projectSlots.push({ kind: "empty", key: `empty-before-${title}` });
+      hasUnpairedHalfWidthProject = false;
+    }
+
+    projectSlots.push({ kind: "project", title });
+
+    if (layout.variant === "standard") {
+      hasUnpairedHalfWidthProject = !hasUnpairedHalfWidthProject;
+    }
+  }
+
+  if (hasUnpairedHalfWidthProject) {
+    projectSlots.push({ kind: "empty", key: "empty-at-end" });
+  }
+  useEffect(() => {
+    const availableTitles = PROJECT_LAYOUT.map(({ title }) => title);
+    const storedOrder = window.localStorage.getItem(PROJECT_ORDER_STORAGE_KEY);
+
+    if (!storedOrder) {
+      setProjectOrder(availableTitles);
+      return;
+    }
+
+    try {
+      const parsedOrder = JSON.parse(storedOrder) as string[];
+      const validOrder = parsedOrder.filter((title) =>
+        availableTitles.includes(title),
+      );
+      const missingTitles = availableTitles.filter(
+        (title) => !validOrder.includes(title),
+      );
+
+      setProjectOrder([...validOrder, ...missingTitles]);
+    } catch {
+      setProjectOrder(availableTitles);
+    }
+  }, []);
+
+  const saveProjectOrder = (nextOrder: string[]) => {
+    setProjectOrder(nextOrder);
+    window.localStorage.setItem(
+      PROJECT_ORDER_STORAGE_KEY,
+      JSON.stringify(nextOrder),
+    );
+  };
+
+  const swapProjects = (fromTitle: string, toTitle: string) => {
+    if (fromTitle === toTitle) return;
+
+    const nextOrder = [...projectOrder];
+    const fromIndex = nextOrder.indexOf(fromTitle);
+    const toIndex = nextOrder.indexOf(toTitle);
+
+    if (fromIndex < 0 || toIndex < 0) return;
+
+    [nextOrder[fromIndex], nextOrder[toIndex]] = [
+      nextOrder[toIndex],
+      nextOrder[fromIndex],
+    ];
+    saveProjectOrder(nextOrder);
+  };
+
+  const resetProjectOrder = () => {
+    const defaultOrder = PROJECT_LAYOUT.map(({ title }) => title);
+    saveProjectOrder(defaultOrder);
+  };
+
+  const moveProject = (title: string, direction: -1 | 1) => {
+    const currentIndex = projectOrder.indexOf(title);
+    const nextIndex = currentIndex + direction;
+
+    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= projectOrder.length) {
+      return;
+    }
+
+    const nextOrder = [...projectOrder];
+    [nextOrder[currentIndex], nextOrder[nextIndex]] = [
+      nextOrder[nextIndex],
+      nextOrder[currentIndex],
+    ];
+    saveProjectOrder(nextOrder);
+  };
+
+  const handleProjectDragStart = (
+    event: DragEvent<HTMLElement>,
+    title: string,
+  ) => {
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", title);
+    setDraggedProject(title);
+    setDropTarget(null);
+  };
+
+  const handleProjectDragEnter = (
+    event: DragEvent<HTMLElement>,
+    title: string,
+  ) => {
+    event.preventDefault();
+
+    if (draggedProject && draggedProject !== title) {
+      setDropTarget(title);
+    }
+  };
+
+  const handleProjectDrop = (event: DragEvent<HTMLElement>, title: string) => {
+    event.preventDefault();
+    const fromTitle =
+      event.dataTransfer.getData("text/plain") || draggedProject;
+
+    if (fromTitle) swapProjects(fromTitle, title);
+    setDraggedProject(null);
+    setDropTarget(null);
+  };
+
+  const handleProjectKeyDown = (
+    event: KeyboardEvent<HTMLElement>,
+    title: string,
+  ) => {
+    if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      event.preventDefault();
+      moveProject(title, -1);
+    }
+
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      event.preventDefault();
+      moveProject(title, 1);
+    }
+  };
+
+  useEffect(() => {
+    const sectionIds = ["experience", "education", "projects", "about"];
+
+    const updateActiveSection = () => {
+      const activationPoint = window.scrollY + 78 + window.innerHeight * 0.32;
+      const currentSection = sectionIds.reduce<string | null>((active, id) => {
+        const section = document.getElementById(id);
+
+        return section && section.offsetTop <= activationPoint ? id : active;
+      }, null);
+
+      setActiveSection(currentSection);
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+    };
+  }, []);
+
   return (
     <main>
       <header className="site-header">
@@ -277,10 +444,21 @@ export default function Home() {
             </span>
           </a>
           <div className="nav-links">
-            <a href="#experience">Experience</a>
-            <a href="#education">Education</a>
-            <a href="#projects">Projects</a>
-            <a href="#about">About</a>
+            {[
+              ["experience", "Experience"],
+              ["education", "Education"],
+              ["projects", "Projects"],
+              ["about", "About"],
+            ].map(([id, label]) => (
+              <a
+                aria-current={activeSection === id ? "location" : undefined}
+                className={activeSection === id ? "is-active" : undefined}
+                href={`#${id}`}
+                key={id}
+              >
+                {label}
+              </a>
+            ))}
           </div>
           <details className="nav-menu">
             <summary aria-label="Open menu">
@@ -290,13 +468,27 @@ export default function Home() {
               <a href={`mailto:${portfolio.email}`}>Contact me</a>
               <a href="/quiz">Take the quiz</a>
               <a download href="/Dracos_Logan_Resume.pdf">
-                Download résumé
+                Download resume
               </a>
             </div>
           </details>
         </nav>
       </header>
-      <section className="hero" id="top">
+      <section
+        className="hero"
+        id="top"
+        onPointerMove={(event) => {
+          const bounds = event.currentTarget.getBoundingClientRect();
+          event.currentTarget.style.setProperty(
+            "--cursor-x",
+            `${event.clientX - bounds.left}px`,
+          );
+          event.currentTarget.style.setProperty(
+            "--cursor-y",
+            `${event.clientY - bounds.top}px`,
+          );
+        }}
+      >
         <div className="headshot-frame">
           <Image
             alt="Portrait of Logan Dracos"
@@ -305,9 +497,6 @@ export default function Home() {
             priority
             src={headshot}
           />
-        </div>
-        <div className="eyebrow">
-          <span /> {portfolio.availability}
         </div>
         <h1>{portfolio.name}</h1>
         <div className="hero-role-line">
@@ -352,17 +541,63 @@ export default function Home() {
         <div className="section-content">
           <div className="projects-heading">
             <h2>Personal Projects</h2>
+            <div className="projects-controls">
+              <p>
+                Drag a card to make this wall yours. Your order stays saved
+                here.
+              </p>
+              <button onClick={resetProjectOrder} type="button">
+                Reset order
+              </button>
+            </div>
           </div>
           <div className="projects-grid">
-            {projectLayout.map(({ title, variant }) => {
-              const project = projectByTitle.get(title);
+            {projectSlots.map((slot) => {
+              if (slot.kind === "empty") {
+                return (
+                  <div
+                    aria-hidden="true"
+                    className="project-empty-slot"
+                    key={slot.key}
+                  />
+                );
+              }
 
-              return project ? (
-                <ProjectCard
+              const { title } = slot;
+              const project = projectByTitle.get(title);
+              const layout = PROJECT_LAYOUT.find(
+                (item) => item.title === title,
+              );
+
+              return project && layout ? (
+                <article
+                  aria-label={`Reorder ${project.title}. Use arrow keys or drag to move it.`}
+                  className={`project-sortable project-${layout.variant} ${
+                    draggedProject === title ? "is-dragging" : ""
+                  } ${dropTarget === title ? "is-drop-target" : ""}`}
                   key={project.title}
-                  project={project}
-                  variant={variant}
-                />
+                  onDragEnd={() => {
+                    setDraggedProject(null);
+                    setDropTarget(null);
+                  }}
+                  onDragEnter={(event) => handleProjectDragEnter(event, title)}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={(event) => handleProjectDrop(event, title)}
+                >
+                  <button
+                    aria-label={`Move ${project.title} with the arrow keys`}
+                    className="project-drag-hint"
+                    draggable
+                    onDragStart={(event) =>
+                      handleProjectDragStart(event, title)
+                    }
+                    onKeyDown={(event) => handleProjectKeyDown(event, title)}
+                    type="button"
+                  >
+                    ⋮⋮ drag to swap
+                  </button>
+                  <ProjectCard project={project} />
+                </article>
               ) : null;
             })}
           </div>

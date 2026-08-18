@@ -49,11 +49,10 @@ export const portfolio = {
   role: "Full-Stack Software Engineer",
   location: "Washginton, D.C.",
   email: "logandracos@gmail.com",
-  availability: "Software Developer Engineer at Amazon",
   intro:
-    "Hello! I'm Logan, and I like to create full-stack projects with AWS services, React, and Java. I specialize in building data-driven tools for financial systems, although I like to play around with all aspects of development. I'm excited to start in Amazon's FinTech Organization this September.",
+    "Hello! I'm Logan, and I like to create full-stack projects with AWS services, React, and Java. I specialize in building data-driven tools for financial systems, although I like to play around with all aspects of development. I'm excited to start in Amazon's FinTech Organization in September 2026.",
   about: [
-    "I'm originally from New York and have been building things since high school, starting off with basic HTML and CSS projects and growing from there into a full stack of technologies. These days, I focus on cloud infrastructure and data-driven apps, designing scalable systems on AWS and building the databases and React frontends that bring them to life. I especailly enjoy projects that combine tech and finance that real people can use.",
+    "I'm originally from New York and have been building things since high school. These days, I focus on end-to-end development, combining frontend UX, data-driven backend apps, and cloud infrastructure. I especailly enjoy projects that blend tech and finance that real people can use.",
     "I recently graduated in Spring 2026 from Duke with a major in Computer Science and a minor in finance. I'll be moving to D.C. in early September. While I'll miss the North Carolina weather, I'm excited to explore a new city and new lifestyle working full time at Amazon's Arlington office.",
   ],
   socialLinks: [
