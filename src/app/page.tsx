@@ -1,7 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { type DragEvent, type KeyboardEvent, useEffect, useState } from "react";
+import {
+  type DragEvent,
+  type KeyboardEvent,
+  type PointerEvent,
+  useEffect,
+  useState,
+} from "react";
 import amazonLogo from "@/data/Amazon_logo.svg.png";
 import canoeingPicture from "@/data/canoeing_picture.jpg";
 import mailIcon from "@/data/free-mail-icon-142-thumb.png";
@@ -391,6 +397,35 @@ export default function Home() {
     setDropTarget(null);
   };
 
+  const handleProjectTouchStart = (
+    event: PointerEvent<HTMLButtonElement>,
+    title: string,
+  ) => {
+    if (event.pointerType === "mouse") return;
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDraggedProject(title);
+    setDropTarget(null);
+  };
+
+  const handleProjectTouchMove = (event: PointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType === "mouse" || !draggedProject) return;
+
+    const target = document
+      .elementFromPoint(event.clientX, event.clientY)
+      ?.closest<HTMLElement>("[data-project-title]")?.dataset.projectTitle;
+
+    if (target && target !== draggedProject) setDropTarget(target);
+  };
+
+  const handleProjectTouchEnd = (event: PointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType === "mouse") return;
+
+    if (draggedProject && dropTarget) swapProjects(draggedProject, dropTarget);
+    setDraggedProject(null);
+    setDropTarget(null);
+  };
+
   const handleProjectKeyDown = (
     event: KeyboardEvent<HTMLElement>,
     title: string,
@@ -430,9 +465,43 @@ export default function Home() {
     };
   }, []);
 
+  const updatePattern = (
+    element: HTMLElement,
+    clientX: number,
+    clientY: number,
+  ) => {
+    const bounds = element.getBoundingClientRect();
+    element.style.setProperty(
+      "--pattern-x",
+      `${(clientX - bounds.left) * -0.12}px`,
+    );
+    element.style.setProperty(
+      "--pattern-y",
+      `${(clientY - bounds.top) * -0.12}px`,
+    );
+  };
+
+  const updatePatternFromTouch = (element: HTMLElement, touch: Touch) => {
+    updatePattern(element, touch.clientX, touch.clientY);
+  };
+
+  const updateHeaderPattern = (clientX: number, clientY: number) => {
+    const target = document.getElementById(activeSection ?? "top");
+    if (target) updatePattern(target, clientX, clientY);
+  };
+
   return (
     <main>
-      <header className="site-header">
+      <header
+        className={`site-header${activeSection ? ` site-header-${activeSection}` : ""}`}
+        onPointerMove={(event) =>
+          updateHeaderPattern(event.clientX, event.clientY)
+        }
+        onTouchMove={(event) => {
+          const touch = event.touches[0];
+          if (touch) updateHeaderPattern(touch.clientX, touch.clientY);
+        }}
+      >
         <nav className="site-nav" aria-label="Primary navigation">
           <a className="monogram" href="#top" aria-label="Back to top">
             <span className="initials-crop">
@@ -477,16 +546,12 @@ export default function Home() {
       <section
         className="hero"
         id="top"
-        onPointerMove={(event) => {
-          const bounds = event.currentTarget.getBoundingClientRect();
-          event.currentTarget.style.setProperty(
-            "--cursor-x",
-            `${event.clientX - bounds.left}px`,
-          );
-          event.currentTarget.style.setProperty(
-            "--cursor-y",
-            `${event.clientY - bounds.top}px`,
-          );
+        onPointerMove={(event) =>
+          updatePattern(event.currentTarget, event.clientX, event.clientY)
+        }
+        onTouchMove={(event) => {
+          const touch = event.touches[0];
+          if (touch) updatePatternFromTouch(event.currentTarget, touch);
         }}
       >
         <div className="headshot-frame">
@@ -519,7 +584,17 @@ export default function Home() {
           <SocialLinks variant="hero" />
         </div>
       </section>
-      <section className="section experience-section" id="experience">
+      <section
+        className="section experience-section"
+        id="experience"
+        onPointerMove={(event) =>
+          updatePattern(event.currentTarget, event.clientX, event.clientY)
+        }
+        onTouchMove={(event) => {
+          const touch = event.touches[0];
+          if (touch) updatePatternFromTouch(event.currentTarget, touch);
+        }}
+      >
         <p className="section-label">01 / Experience</p>
         <div className="section-content">
           <h2>
@@ -530,13 +605,33 @@ export default function Home() {
           <Timeline entries={portfolio.experience} variant="experience" />
         </div>
       </section>
-      <section className="section education-section" id="education">
+      <section
+        className="section education-section"
+        id="education"
+        onPointerMove={(event) =>
+          updatePattern(event.currentTarget, event.clientX, event.clientY)
+        }
+        onTouchMove={(event) => {
+          const touch = event.touches[0];
+          if (touch) updatePatternFromTouch(event.currentTarget, touch);
+        }}
+      >
         <p className="section-label">02 / Education</p>
         <div className="section-content">
           <EducationTimeline entries={portfolio.education} />
         </div>
       </section>
-      <section className="section projects-section" id="projects">
+      <section
+        className="section projects-section"
+        id="projects"
+        onPointerMove={(event) =>
+          updatePattern(event.currentTarget, event.clientX, event.clientY)
+        }
+        onTouchMove={(event) => {
+          const touch = event.touches[0];
+          if (touch) updatePatternFromTouch(event.currentTarget, touch);
+        }}
+      >
         <p className="section-label">03 / Selected work</p>
         <div className="section-content">
           <div className="projects-heading">
@@ -575,6 +670,7 @@ export default function Home() {
                   className={`project-sortable project-${layout.variant} ${
                     draggedProject === title ? "is-dragging" : ""
                   } ${dropTarget === title ? "is-drop-target" : ""}`}
+                  data-project-title={title}
                   key={project.title}
                   onDragEnd={() => {
                     setDraggedProject(null);
@@ -592,6 +688,12 @@ export default function Home() {
                       handleProjectDragStart(event, title)
                     }
                     onKeyDown={(event) => handleProjectKeyDown(event, title)}
+                    onPointerCancel={handleProjectTouchEnd}
+                    onPointerDown={(event) =>
+                      handleProjectTouchStart(event, title)
+                    }
+                    onPointerMove={handleProjectTouchMove}
+                    onPointerUp={handleProjectTouchEnd}
                     type="button"
                   >
                     ⋮⋮ drag to swap
@@ -603,7 +705,17 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="section about-section" id="about">
+      <section
+        className="section about-section"
+        id="about"
+        onPointerMove={(event) =>
+          updatePattern(event.currentTarget, event.clientX, event.clientY)
+        }
+        onTouchMove={(event) => {
+          const touch = event.touches[0];
+          if (touch) updatePatternFromTouch(event.currentTarget, touch);
+        }}
+      >
         <p className="section-label">04 / About me</p>
         <div className="section-content about-content">
           <div className="about-visual">
