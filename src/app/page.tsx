@@ -481,7 +481,10 @@ export default function Home() {
     );
   };
 
-  const updatePatternFromTouch = (element: HTMLElement, touch: Touch) => {
+  const updatePatternFromTouch = (
+    element: HTMLElement,
+    touch: Pick<Touch, "clientX" | "clientY">,
+  ) => {
     updatePattern(element, touch.clientX, touch.clientY);
   };
 
