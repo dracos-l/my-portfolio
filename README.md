@@ -24,5 +24,8 @@ npm run start
 <ul>
     <li> Next.js with Typescript </li>
     <li> Tailwind.css for styling </li>
+    <li> Supabase for storage </li>
+    <li> Resend for communications </li>
+    <li> OpenAI API for content regulation </li>
     <li> Vercel for deployment </li>
 </ul>
