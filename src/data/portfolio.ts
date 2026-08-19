@@ -13,6 +13,7 @@ export type Experience = {
 };
 
 export type Project = {
+  id: string;
   title: string;
   role: string;
   period: string;
@@ -20,7 +21,8 @@ export type Project = {
   highlights: string[];
   technologies: string[];
   links: Link[];
-  featured?: boolean;
+  layout: "featured" | "standard" | "pickup";
+  order: number;
   tooltip: string;
 };
 
@@ -45,14 +47,13 @@ export type QuizQuestion = {
  */
 export const portfolio = {
   name: "Logan Dracos",
-  initials: "LD",
   role: "Full-Stack Software Engineer",
-  location: "Washginton, D.C.",
+  location: "Washington, D.C.",
   email: "logandracos@gmail.com",
   intro:
     "Hello! I'm Logan, and I like to create full-stack projects with AWS services, React, and Java. I specialize in building data-driven tools for financial systems, although I like to play around with all aspects of development. I'm excited to start in Amazon's FinTech Organization in September 2026.",
   about: [
-    "I'm originally from New York and have been building things since high school. These days, I focus on end-to-end development, combining frontend UX, data-driven backend apps, and cloud infrastructure. I especailly enjoy projects that blend tech and finance that real people can use.",
+    "I'm originally from New York and have been building things since high school. These days, I focus on end-to-end development, combining frontend UX, data-driven backend apps, and cloud infrastructure. I especially enjoy projects that blend tech and finance that real people can use.",
     "I recently graduated in Spring 2026 from Duke with a major in Computer Science and a minor in finance. I'll be moving to D.C. in early September. While I'll miss the North Carolina weather, I'm excited to explore a new city and new lifestyle working full time at Amazon's Arlington office.",
   ],
   socialLinks: [
@@ -65,7 +66,7 @@ export const portfolio = {
       options: ["The sunsets", "Cookout", "The nice weather", "Waffle House"],
       answer: 2,
       explanation:
-        "I will miss miss all of these deeply. But the weather was the best",
+        "I will miss all of these deeply. But the weather was the best.",
     },
     {
       question:
@@ -191,6 +192,7 @@ export const portfolio = {
   ] satisfies Experience[],
   projects: [
     {
+      id: "game-authoring",
       title: "2D Game Player & Authoring",
       role: "Developer",
       period: "March — May 2025",
@@ -211,11 +213,13 @@ export const portfolio = {
       links: [
         { label: "GitHub", href: "https://github.com/dracos-l/oogasalad" },
       ],
-      featured: true,
+      layout: "featured",
+      order: 1,
       tooltip:
         "This was an 8 person project! Distributing work and coordinating progress was a challenge, but it was extremely rewarding to see the final product.",
     },
     {
+      id: "cell-society",
       title: "Cell Society",
       role: "Developer",
       period: "January — March 2025",
@@ -229,10 +233,13 @@ export const portfolio = {
       links: [
         { label: "GitHub", href: "https://github.com/dracos-l/cellsociety" },
       ],
+      layout: "standard",
+      order: 2,
       tooltip:
         "This was a three person project, and I did a lot of work on the simulation logic. It was a challenge having to continuously rethink the cell simulation design to account for new requirements. Shoutout CS308 and Professor Duvall!",
     },
     {
+      id: "pickup-comps",
       title: "Pickup Comps",
       role: "Co-Founder, Head Frontend Developer",
       period: "September 2023 — September 2024",
@@ -246,10 +253,13 @@ export const portfolio = {
       links: [
         { label: "GitHub", href: "https://github.com/dracos-l/pickupcompsv2" },
       ],
+      layout: "pickup",
+      order: 4,
       tooltip:
         "This is my favorite personal project, you really can't find another tool like this online. I'm very proud of it, having developed it with basically no AI use.",
     },
     {
+      id: "bearish",
       title: "Bearish",
       role: "Developer",
       period: "September 2023",
@@ -263,10 +273,13 @@ export const portfolio = {
       links: [
         { label: "GitHub", href: "https://github.com/dracos-l/hackduke23" },
       ],
+      layout: "standard",
+      order: 5,
       tooltip:
         "This was a super fun project! Certainly not the cleanest since it was done in a time crunch, but I had a great time with it.",
     },
     {
+      id: "amora",
       title: "Amora",
       role: "Co-Developer",
       period: "October - December 2024",
@@ -288,10 +301,13 @@ export const portfolio = {
       links: [
         { label: "GitHub", href: "https://github.com/dracos-l/DatingApp" },
       ],
+      layout: "standard",
+      order: 3,
       tooltip:
         "This was a part of a class I took in my study abroad in Madrid. It was my first time using many of these technologies, and it was fun doing a project in a different way than I had before.",
     },
     {
+      id: "breakout",
       title: "Breakout",
       role: "Sole Developer",
       period: "January 2025",
@@ -305,6 +321,8 @@ export const portfolio = {
       links: [
         { label: "GitHub", href: "https://github.com/dracos-l/breakout" },
       ],
+      layout: "standard",
+      order: 6,
       tooltip:
         "This is my only solo project (outside internships). It was very cool to play around with the collision and physics at such a low level.",
     },

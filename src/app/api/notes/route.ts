@@ -13,7 +13,6 @@ type DatabaseNote = {
   id: string;
   message: string;
   author_name: string | null;
-  created_at: string;
   position_x: number;
   position_y: number;
 };
@@ -22,7 +21,6 @@ type Note = {
   id: string;
   message: string;
   authorName: string | null;
-  createdAt: string;
   positionX: number;
   positionY: number;
 };
@@ -45,7 +43,6 @@ function mapNote(note: DatabaseNote): Note {
     id: note.id,
     message: note.message,
     authorName: note.author_name,
-    createdAt: note.created_at,
     positionX: note.position_x,
     positionY: note.position_y,
   };
@@ -134,7 +131,7 @@ export async function GET() {
 
   try {
     const response = await fetch(
-      `${supabaseUrl}/rest/v1/sticky_notes?select=id,message,author_name,created_at,position_x,position_y&status=eq.published&order=created_at.desc&limit=${MAX_NOTES}`,
+      `${supabaseUrl}/rest/v1/sticky_notes?select=id,message,author_name,position_x,position_y&status=eq.published&order=created_at.desc&limit=${MAX_NOTES}`,
       {
         headers: {
           apikey: supabaseKey,
